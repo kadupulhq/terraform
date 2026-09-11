@@ -1,0 +1,59 @@
+name: Terraform
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Format and validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.16.2
+
+      - run: terraform fmt -check -recursive -diff
+
+      # No credentials needed: this checks the configuration, not the account.
+      - run: terraform init -backend=false -input=false
+      - run: terraform validate
+
+  plan:
+    name: Plan
+    needs: check
+    runs-on: ubuntu-latest
+    # A plan reads the whole organisation, so it runs with a real token and only
+    # for a branch in this repository, never a pull request from a fork.
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    environment: github-admin
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: 1.16.2
+
+      - env:
+          GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}
+        run: |
+          terraform init -input=false
+          terraform plan -input=false -no-color -out=tfplan
+        # Apply is deliberately not wired up. Changing who can merge to main
+        # across the organisation is a decision, not a side effect of a merge.
+        # Run `terraform apply tfplan` by hand after reading the plan.
