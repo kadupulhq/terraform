@@ -152,9 +152,9 @@ root's generic ruleset as an exact representation of those live settings.
 - The database backup service succeeded. A dump restored into an isolated
   temporary database reproduced 330 units and two components; that database was
   removed. This is a database restore test, not a full Droplet recovery test.
-- The carried-over five backup tests exercise readiness retries, successful
+- The six backup tests exercise readiness retries, successful
   publication/permissions/retention, dump failure, invalid archive failure, and
-  interrupted publication. Website PR #4's
+  interrupted publication, plus recovery of stale partial archives. Website PR #4's
   [final CI run](https://github.com/kadupulhq/website/actions/runs/35021872323)
   separately passed 83 tests (including the interruption regression) with 100%
   measured first-party JS/TS/Astro coverage; that percentage does not measure
