@@ -37,9 +37,9 @@ jobs:
         run: |
           sh -n backup-database.sh
           shellcheck backup-database.sh
-          docker compose --env-file .env.example config --quiet
-          docker compose --env-file .env.example -f compose.yaml -f compose.bootstrap.yaml config --quiet
-          docker compose --env-file .env.example -f compose.yaml -f compose.smtp.yaml config --quiet
+          docker-compose --env-file .env.example config --quiet
+          docker-compose --env-file .env.example -f compose.yaml -f compose.bootstrap.yaml config --quiet
+          docker-compose --env-file .env.example -f compose.yaml -f compose.smtp.yaml config --quiet
 
   plan:
     name: Plan
