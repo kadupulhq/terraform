@@ -3,7 +3,7 @@ variable "admin_ssh_cidr" {
   type        = string
   default     = "73.170.36.107/32"
   validation {
-    condition     = can(cidrnetmask(var.admin_ssh_cidr)) && endswith(var.admin_ssh_cidr, "/32")
+    condition     = !strcontains(var.admin_ssh_cidr, ":") && can(cidrnetmask(var.admin_ssh_cidr)) && endswith(var.admin_ssh_cidr, "/32")
     error_message = "SSH must be limited to one valid IPv4 /32 administrator address."
   }
 }
