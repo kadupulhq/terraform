@@ -13,7 +13,7 @@ locals {
     "good first issue" = { color = "7057ff", description = "Small and well defined" }
     "help wanted"      = { color = "008672", description = "Maintainers would welcome a hand" }
     "needs-repro"      = { color = "fbca04", description = "Cannot act until it reproduces" }
-    "upstream-cacti"   = { color = "c5def5", description = "Inherited from Cacti" }
+    "shared-code"      = { color = "c5def5", description = "Also affects shared code" }
     "wontfix"          = { color = "6a737d", description = "Deliberately not changing this" }
     "duplicate"        = { color = "6a737d", description = "Already tracked elsewhere" }
   }
@@ -24,13 +24,13 @@ locals {
     "graphs"     = { color = "fef2c0", description = "RRDtool, graph templates, rendering" }
     "plugin-api" = { color = "d4c5f9", description = "Touches the interface plugins depend on" }
     "database"   = { color = "fef2c0", description = "Schema, migrations, queries" }
-    "migration"  = { color = "0052cc", description = "Importing an existing Cacti install" }
+    "migration"  = { color = "0052cc", description = "Importing an existing installation" }
   }
 
   repositories = {
     kadupul = {
-      description     = "Network monitoring and graphing. A fork of Cacti."
-      topics          = ["monitoring", "network-monitoring", "snmp", "rrdtool", "graphing", "php", "cacti"]
+      description     = "Network monitoring and graphing."
+      topics          = ["monitoring", "network-monitoring", "snmp", "rrdtool", "graphing", "php"]
       labels          = merge(local.common_labels, local.app_labels)
       has_discussions = true
     }
