@@ -3,6 +3,12 @@
 This organisation, as code: repositories, labels, default branches, and the
 rules that protect them.
 
+The independent [Weblate stack](stacks/weblate/README.md) captures Kadupul's
+existing DigitalOcean translation service, imports, deployment configuration,
+backup automation and operational handoff. Run that stack using `-chdir` as
+documented there; root-level plans manage GitHub only. Runtime versions are
+pinned in `.mise.toml`; use `mise exec -- terraform ...`.
+
 ## What it manages
 
 - Every repository in the organisation, with its settings, topics and

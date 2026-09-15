@@ -22,15 +22,24 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
-        with:
-          terraform_version: 1.16.2
+      - uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3
 
       - run: terraform fmt -check -recursive -diff
 
       # No credentials needed: this checks the configuration, not the account.
       - run: terraform init -backend=false -input=false
       - run: terraform validate
+      - run: terraform -chdir=stacks/weblate init -backend=false -input=false -lockfile=readonly
+      - run: terraform -chdir=stacks/weblate validate
+      - run: node --test stacks/weblate/tests/backup.test.mjs
+      - name: Validate deployment configuration
+        working-directory: stacks/weblate/deployment
+        run: |
+          sh -n backup-database.sh
+          shellcheck backup-database.sh
+          docker compose --env-file .env.example config --quiet
+          docker compose --env-file .env.example -f compose.yaml -f compose.bootstrap.yaml config --quiet
+          docker compose --env-file .env.example -f compose.yaml -f compose.smtp.yaml config --quiet
 
   plan:
     name: Plan
@@ -45,9 +54,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
-        with:
-          terraform_version: 1.16.2
+      - uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3
 
       - env:
           GITHUB_TOKEN: ${{ secrets.TF_GITHUB_TOKEN }}

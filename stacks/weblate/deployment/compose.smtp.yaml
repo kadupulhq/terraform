@@ -1,0 +1,16 @@
+# Opt in only after configuring and verifying the email provider.
+services:
+  weblate:
+    secrets:
+      - smtp_password
+    environment:
+      WEBLATE_EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+      WEBLATE_EMAIL_HOST: ${WEBLATE_EMAIL_HOST:?Set the SMTP host}
+      WEBLATE_EMAIL_PORT: ${WEBLATE_EMAIL_PORT:?Set a provider-supported SMTP port reachable from DigitalOcean}
+      WEBLATE_EMAIL_USE_TLS: "1"
+      WEBLATE_EMAIL_USE_SSL: "0"
+      WEBLATE_EMAIL_HOST_USER: ${WEBLATE_EMAIL_HOST_USER:?Set the SMTP user}
+      WEBLATE_EMAIL_HOST_PASSWORD_FILE: /run/secrets/smtp_password
+secrets:
+  smtp_password:
+    file: ${WEBLATE_SECRETS_DIR:-/etc/kadupul-weblate/secrets}/smtp_password

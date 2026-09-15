@@ -1,0 +1,12 @@
+[Unit]
+Description=Back up the Kadupul Weblate database
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/kadupul-weblate
+ExecStart=/bin/sh /opt/kadupul-weblate/backup-database.sh
+TimeoutStartSec=30min
+UMask=0077
