@@ -26,7 +26,7 @@ esac
 	writeFileSync(sleep, '#!/bin/sh\nexit 0\n');
 	chmodSync(sleep, 0o700);
 	const find = join(root, 'find');
-	writeFileSync(find, '#!/bin/sh\nif [ "$FAIL_AT" = signal ]; then kill -TERM "$PPID"; exit 0; fi\nexec /usr/bin/find "$@"\n');
+	writeFileSync(find, '#!/bin/sh\nif [ "$FAIL_AT" = signal ] && [ "$7" = "database-????????T??????Z.dump" ]; then kill -TERM "$PPID"; exit 0; fi\nexec /usr/bin/find "$@"\n');
 	chmodSync(find, 0o700);
 	const original = readFileSync(new URL('../deployment/backup-database.sh', import.meta.url), 'utf8');
 	const script = original.replace('cd /opt/kadupul-weblate', `cd '${root}'`)
@@ -85,4 +85,20 @@ test('interruption after archive publication exits nonzero without announcing su
 	assert.doesNotMatch(result.stdout, /backup completed/);
 	assert.equal(readdirSync(backups).filter((name) => name.startsWith('database-')).length, 2);
 	assert.ok(!readdirSync(backups).some((name) => name.startsWith('.database-')));
+});
+
+
+test('backup recovers old partial archives while preserving recent partials', (t) => {
+    const { backups, run } = fixture(t);
+    const stale = join(backups, '.database-old123');
+    const recent = join(backups, '.database-new123');
+    const unrelated = join(backups, '.database-not-an-archive');
+    for (const path of [stale, recent, unrelated]) writeFileSync(path, 'partial');
+    const expired = new Date(Date.now() - 2 * 86400000);
+    for (const path of [stale, unrelated]) utimesSync(path, expired, expired);
+    const result = run();
+    assert.equal(result.status, 0, result.stderr);
+    assert.ok(!readdirSync(backups).includes('.database-old123'));
+    assert.equal(readFileSync(recent, 'utf8'), 'partial');
+    assert.equal(readFileSync(unrelated, 'utf8'), 'partial');
 });

@@ -15,6 +15,9 @@ until /usr/bin/docker compose exec -T database pg_isready -U weblate -d weblate 
     fi
     sleep 5
 done
+# Recover orphaned partial dumps from power loss or an uncatchable signal.
+# The service timeout is one hour; keep recent files in case a backup is active.
+find "$backup_dir" -maxdepth 1 -type f -name '.database-??????' -mmin +1440 -delete
 backup_file="$backup_dir/database-$(date -u +%Y%m%dT%H%M%SZ).dump"
 backup_temp=$(mktemp "$backup_dir/.database-XXXXXX")
 trap 'rm -f "$backup_temp"' EXIT
