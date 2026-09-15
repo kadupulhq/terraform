@@ -1,0 +1,128 @@
+name: kadupul-weblate
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+services:
+  proxy:
+    image: caddy:2.11.4-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      WEBLATE_DOMAIN: ${WEBLATE_DOMAIN:?Set the public hostname}
+      ACME_EMAIL: ${WEBLATE_ADMIN_EMAIL:?Set the owner email}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      frontend:
+        ipv4_address: 172.30.91.2
+
+  weblate:
+    image: weblate/weblate:2026.9.1.0@sha256:990720d1737a3f5a0221017943f568adb215e8f1571f2c6d37622c1bdfbc678b
+    restart: unless-stopped
+    logging: *logging
+    read_only: true
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - weblate-data:/app/data
+      - weblate-cache:/app/cache
+    secrets:
+      - db_password
+    environment:
+      WEBLATE_SITE_TITLE: Kadupul translations
+      WEBLATE_SITE_DOMAIN: ${WEBLATE_DOMAIN:?Set the public hostname}
+      WEBLATE_ALLOWED_HOSTS: ${WEBLATE_DOMAIN:?Set the public hostname}
+      WEBLATE_ADMIN_NAME: Kadupul administrator
+      WEBLATE_ADMIN_EMAIL: ${WEBLATE_ADMIN_EMAIL:?Set the owner email}
+      WEBLATE_ENABLE_HTTPS: "1"
+      WEBLATE_IP_PROXY_HEADER: HTTP_X_FORWARDED_FOR
+      WEBLATE_TRUSTED_PROXY_ADDRESSES: 172.30.91.2
+      WEBLATE_SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
+      WEBLATE_REGISTRATION_OPEN: "0"
+      WEBLATE_DEBUG: "0"
+      WEBLATE_WORKERS: "2"
+      WEBLATE_DATABASE_BACKUP: plain
+      # Email is intentionally disabled until a provider is configured.
+      WEBLATE_EMAIL_BACKEND: django.core.mail.backends.dummy.EmailBackend
+      WEBLATE_EMAIL_HOST: localhost
+      WEBLATE_SERVER_EMAIL: ${WEBLATE_FROM_EMAIL:?Set the site sender address}
+      WEBLATE_DEFAULT_FROM_EMAIL: ${WEBLATE_FROM_EMAIL:?Set the site sender address}
+      POSTGRES_HOST: database
+      POSTGRES_USER: weblate
+      POSTGRES_DB: weblate
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      REDIS_HOST: cache
+    depends_on:
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    networks:
+      - frontend
+      - backend
+
+  database:
+    image: postgres:18-alpine@sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      POSTGRES_USER: weblate
+      POSTGRES_DB: weblate
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U weblate -d weblate"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - backend
+
+  cache:
+    image: valkey/valkey:9.1.2@sha256:c123e3715db63d06d4ad6964884037aa0d5d4d703939b9929954112889708e1d
+    restart: unless-stopped
+    logging: *logging
+    read_only: true
+    command: [valkey-server, --save, "60", "1", --loglevel, warning]
+    volumes:
+      - cache-data:/data
+    healthcheck:
+      test: [CMD, valkey-cli, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - backend
+
+networks:
+  frontend:
+    ipam:
+      config:
+        - subnet: 172.30.91.0/24
+  backend:
+    internal: true
+
+volumes:
+  caddy-data: {}
+  caddy-config: {}
+  weblate-data: {}
+  weblate-cache: {}
+  postgres-data: {}
+  cache-data: {}
+
+secrets:
+  db_password:
+    file: ${WEBLATE_SECRETS_DIR:-/etc/kadupul-weblate/secrets}/db_password

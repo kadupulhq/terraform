@@ -9,3 +9,10 @@ crash.*.log
 .terraformrc
 terraform.rc
 tfplan
+*.tfplan
+*.plan.json
+.env
+.env.*
+!.env.example
+*.pem
+secrets/

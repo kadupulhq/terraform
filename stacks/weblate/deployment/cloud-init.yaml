@@ -1,0 +1,49 @@
+#cloud-config
+# Replace ADMIN_SSH_CIDR and ADMIN_SSH_PUBLIC_KEY before provisioning.
+# No credentials belong in user-data: DigitalOcean retains it as metadata.
+package_update: true
+package_upgrade: true
+packages:
+  - docker.io
+  - docker-compose-v2
+  - unattended-upgrades
+  - ufw
+ssh_pwauth: false
+disable_root: true
+users:
+  - name: kadupul-admin
+    groups: [sudo]
+    shell: /bin/bash
+    lock_passwd: true
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    ssh_authorized_keys:
+      - ADMIN_SSH_PUBLIC_KEY
+write_files:
+  - path: /etc/ssh/sshd_config.d/00-kadupul.conf
+    owner: root:root
+    permissions: "0600"
+    content: |
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PermitRootLogin no
+      X11Forwarding no
+  - path: /etc/apt/apt.conf.d/52kadupul-security
+    owner: root:root
+    permissions: "0644"
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+      Unattended-Upgrade::Automatic-Reboot "false";
+runcmd:
+  - [systemctl, enable, --now, docker]
+  - [sshd, -t]
+  - [systemctl, reload, ssh]
+  - [ufw, default, deny, incoming]
+  - [ufw, default, allow, outgoing]
+  - [ufw, allow, from, ADMIN_SSH_CIDR, to, any, port, "22", proto, tcp]
+  - [ufw, allow, "80/tcp"]
+  - [ufw, allow, "443/tcp"]
+  - [ufw, --force, enable]
+  - [install, -d, -m, "0755", /opt/kadupul-weblate]
+  - [install, -d, -m, "0700", /etc/kadupul-weblate/secrets]
+  - [install, -d, -m, "0700", /var/backups/kadupul-weblate]

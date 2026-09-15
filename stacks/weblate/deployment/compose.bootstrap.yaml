@@ -1,0 +1,10 @@
+# Use only for initial administrator creation; omit on subsequent starts.
+services:
+  weblate:
+    secrets:
+      - admin_password
+    environment:
+      WEBLATE_ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+secrets:
+  admin_password:
+    file: ${WEBLATE_SECRETS_DIR:-/etc/kadupul-weblate/secrets}/admin_password

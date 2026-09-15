@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Kadupul Weblate database backup before the Droplet backup window
+
+[Timer]
+OnCalendar=*-*-* 07:00:00 UTC
+Persistent=true
+Unit=kadupul-weblate-backup.service
+
+[Install]
+WantedBy=timers.target
