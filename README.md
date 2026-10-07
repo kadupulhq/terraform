@@ -1,5 +1,8 @@
 # terraform
 
+[![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=kadupulhq_terraform&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=kadupulhq_terraform)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/kadupulhq/terraform/badge)](https://scorecard.dev/viewer/?uri=github.com/kadupulhq/terraform)
+
 This organisation, as code: repositories, labels, default branches, and the
 rules that protect them.
 
