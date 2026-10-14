@@ -45,9 +45,9 @@ jobs:
     name: Plan
     needs: check
     runs-on: ${{ vars.DO_RUNNERS_ENABLED == 'true' && (contains(fromJSON('["push","schedule","workflow_dispatch"]'), github.event_name) || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)) && fromJSON('["self-hosted","Linux","X64","kadupul-do"]') || 'ubuntu-latest' }}
-    # A plan reads the whole organisation, so it runs with a real token and only
-    # for a branch in this repository, never a pull request from a fork.
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    # Planning executes provider code. Only approved main revisions may access
+    # the environment credential; pull requests receive credential-free validation.
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
     environment: github-admin
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
