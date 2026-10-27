@@ -10,3 +10,13 @@ import {
   to = github_repository.this["website"]
   id = "website"
 }
+
+import {
+  to = github_repository.this["template"]
+  id = "template"
+}
+
+import {
+  to = github_repository.this["terraform"]
+  id = "terraform"
+}
