@@ -14,9 +14,10 @@ pinned in `.mise.toml`; use `mise exec -- terraform ...`.
 
 ## What it manages
 
-- Every repository in the organisation, with its settings, topics and
-  description.
-- Issue labels, defined once and applied to every repository.
+- The repositories listed in `local.repositories` in `locals.tf`, with their
+  settings, topics and descriptions. Other repositories in the organisation are
+  not managed here.
+- Issue labels, defined once and applied to every managed repository.
 - A ruleset on each default branch: linear history, signed commits, no force
   push, no deletion, and resolved review threads.
 - Dependabot alerts.
