@@ -20,11 +20,12 @@ locals {
 
   # Labels only the application repository needs.
   app_labels = {
-    "poller"     = { color = "fef2c0", description = "Data collection: cmd.php, spine, SNMP" }
-    "graphs"     = { color = "fef2c0", description = "RRDtool, graph templates, rendering" }
-    "plugin-api" = { color = "d4c5f9", description = "Touches the interface plugins depend on" }
-    "database"   = { color = "fef2c0", description = "Schema, migrations, queries" }
-    "migration"  = { color = "0052cc", description = "Importing an existing installation" }
+    "poller"      = { color = "fef2c0", description = "Data collection: cmd.php, spine, SNMP" }
+    "graphs"      = { color = "fef2c0", description = "RRDtool, graph templates, rendering" }
+    "plugin-api"  = { color = "d4c5f9", description = "Touches the interface plugins depend on" }
+    "database"    = { color = "fef2c0", description = "Schema, migrations, queries" }
+    "migration"   = { color = "0052cc", description = "Importing an existing installation" }
+    "performance" = { color = "fbca04", description = "Runs the route profile workflow on a PR" }
   }
 
   repositories = {
