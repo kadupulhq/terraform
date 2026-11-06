@@ -1,6 +1,8 @@
 version: 2
 updates:
   - package-ecosystem: terraform
+    cooldown:
+      default-days: 7
     directory: /
     schedule:
       interval: weekly
@@ -15,6 +17,8 @@ updates:
           - patch
 
   - package-ecosystem: terraform
+    cooldown:
+      default-days: 7
     directory: /stacks/weblate
     schedule:
       interval: weekly
