@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+# SPDX-License-Identifier: MIT
+
 provider "github" {
   owner = var.organization
   # Token comes from GITHUB_TOKEN. It needs repo, admin:org and delete_repo.

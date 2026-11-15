@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # These repositories already exist. Import blocks make the first plan adopt them
 # instead of trying to create them. Remove a block once its resource is in
 # state, or leave it: import is a no-op after the first apply.

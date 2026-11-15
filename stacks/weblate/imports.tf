@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # These IDs belong to the Relenz team. Adoption must not create or destroy.
 # See README for the provider's one-time backup-policy update on import.
 import {

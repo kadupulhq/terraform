@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+# SPDX-License-Identifier: MIT
+
 # Rulesets rather than branch protection: branch protection is the older API and
 # GitHub's own tooling has moved on. Required status checks are deliberately
 # absent until each repository has had a green run; naming a check that has

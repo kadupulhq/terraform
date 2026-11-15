@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+# SPDX-License-Identifier: MIT
+
 locals {
   # Labels every repository gets. Colours are grouped by meaning: red for
   # things that are wrong, blue for things to build, grey for process.
