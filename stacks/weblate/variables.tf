@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Thomas Vincent <thomasvincent@gmail.com>
+# SPDX-License-Identifier: MIT
+
 variable "admin_ssh_cidr" {
   description = "Administrator IPv4 host allowed SSH. Update host UFW as well; cloud-init does not rerun on adoption."
   type        = string
